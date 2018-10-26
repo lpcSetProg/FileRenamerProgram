@@ -5,8 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileRenamer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+        Title="MainWindow" Height="955.596" Width="1325.899">
+
+    <Grid Background="{DynamicResource CheckBoxHoverBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="355*"/>
+            <RowDefinition Height="406*"/>
+        </Grid.RowDefinitions>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="183,149,0,0" TextWrapping="Wrap" Text="Rename File" VerticalAlignment="Top" Width="259" Grid.Row="1"/>
+        <Button Content="Browse" HorizontalAlignment="Left" Margin="545,142,0,0" VerticalAlignment="Top" Width="121" Click="Button_Click"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="183,142,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="259"/>
+        <ListBox HorizontalAlignment="Left" Height="301" Margin="183,197,0,0" VerticalAlignment="Top" Width="897" Grid.RowSpan="2" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <Button Content="Rename" HorizontalAlignment="Left" Margin="545,149,0,0" VerticalAlignment="Top" Width="121" Background="{DynamicResource Brush01}" Grid.Row="1"/>
+        <Label Content="Bao File Renamer " HorizontalAlignment="Left" Margin="183,58,0,0" VerticalAlignment="Top" Width="483" Height="60" FontSize="36" Foreground="{DynamicResource AccordionButtonExpandedBorderBrush}"/>
     </Grid>
+
+
 </Window>
