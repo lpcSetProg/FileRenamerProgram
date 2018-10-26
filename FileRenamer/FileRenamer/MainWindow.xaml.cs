@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
+using System.IO;
 
 namespace FileRenamer
 {
@@ -23,24 +25,79 @@ namespace FileRenamer
         public MainWindow()
         {
             InitializeComponent();
+
+            populateListBoxImageData();
         }
+
+        private void populateListBoxImageData()
+        {
+            ListBox_ImageData.Items.Add("File Size");
+            ListBox_ImageData.Items.Add("File Type");
+            ListBox_ImageData.Items.Add("MIME Type");
+            ListBox_ImageData.Items.Add("Image Width");
+            ListBox_ImageData.Items.Add("Image Height");
+            ListBox_ImageData.Items.Add("Encoding Process");
+            ListBox_ImageData.Items.Add("Bits Per Sample");
+            ListBox_ImageData.Items.Add("Color Components");
+            ListBox_ImageData.Items.Add("X Resolution");
+            ListBox_ImageData.Items.Add("Y Resolution");
+            ListBox_ImageData.Items.Add("YCbCr Sub Sampling");
+
+        }
+
+
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            // Configure open file dialog box
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.FileName = "Document"; // Default file name
-            dlg.DefaultExt = ".txt"; // Default file extension
-            dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
 
-            // Show open file dialog box
-            Nullable<bool> result = dlg.ShowDialog();
-
-            // Process open file dialog box results
-            if (result == true)
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Multiselect = true;
+            openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            if (openFileDialog.ShowDialog() == true)
             {
-                // Open document
-                string filename = dlg.FileName;
+                foreach (string filename in openFileDialog.FileNames)
+                    ListBox_Files.Items.Add(System.IO.Path.GetFileName(filename));
+            }
+
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        class Button
+        {
+            public string ButtonContent { get; set; }
+            public string ButtonID { get; set; }
+        }
+
+        private void button_Deselect_Click(object sender, RoutedEventArgs e)
+        {
+            ListBox_Files.UnselectAll();
+        }
+
+        private void button_SelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            ListBox_Files.SelectAll();
+        }
+
+        private void button_ClearFiles_Click(object sender, RoutedEventArgs e)
+        {
+            ListBox_Files.Items.Clear();
+        }
+
+        private void button_Basic_Click(object sender, RoutedEventArgs e)
+        {
+            if (button_Basic.Content.ToString() == "Basic")
+            {
+
+                button_Basic.Content = "Advanced";
+            }
+            else
+            {
+                button_Basic.Content = "Basic";
             }
         }
     }
