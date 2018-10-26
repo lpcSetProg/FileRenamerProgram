@@ -35,7 +35,7 @@
         <Button x:Name="button_ClearFiles" Content="Remove" HorizontalAlignment="Left" Margin="427,42,0,0" VerticalAlignment="Top" Width="121" Background="{DynamicResource Brush01}" Grid.Row="3" RenderTransformOrigin="0.508,-1.233" Click="button_ClearFiles_Click"/>
         <Label Content="Image Files" HorizontalAlignment="Left" Margin="66,131,0,0" VerticalAlignment="Top" Width="203" Height="38" FontSize="18" Foreground="{DynamicResource AccordionButtonExpandedBorderBrush}" Grid.RowSpan="2"/>
         <ListBox x:Name="ListBox_ImageData" HorizontalAlignment="Left" Height="301" Margin="588,173,0,0" VerticalAlignment="Top" Width="397" Grid.RowSpan="4" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple"/>
-        <Button x:Name="button_Basic" Content="Basic" HorizontalAlignment="Left" Margin="861,135,0,0" Grid.RowSpan="2" VerticalAlignment="Top" Width="123" Click="button_Basic_Click"/>
+        <Button x:Name="button_Basic" Content="Basic" HorizontalAlignment="Left" Margin="861,135,0,0" Grid.RowSpan="2" VerticalAlignment="Top" Width="123" Click="button_Basic_Click" Background="{DynamicResource AccordionButtonExpandedBackgroundBrush}"/>
 
     </Grid>
 

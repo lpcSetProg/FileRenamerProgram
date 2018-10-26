@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 using System.IO;
+using System.Drawing;
 
 namespace FileRenamer
 {
@@ -26,7 +27,9 @@ namespace FileRenamer
         {
             InitializeComponent();
 
-            populateListBoxImageData();
+            //populateListBoxImageData();
+
+            retrieveEXIFDate();
         }
 
         private void populateListBoxImageData()
@@ -43,6 +46,21 @@ namespace FileRenamer
             ListBox_ImageData.Items.Add("Y Resolution");
             ListBox_ImageData.Items.Add("YCbCr Sub Sampling");
 
+        }
+
+
+        private void retrieveEXIFDate()
+        {
+            System.Drawing.Image image = System.Drawing.Image.FromFile(@"C:\Users\Lcocarell2816\Desktop\Photos\120px-10_Brown_Titlark.jpg");
+            var PropertyTagGridSize = Encoding.UTF8.GetString(image.GetPropertyItem(0x5091).Value);
+            ListBox_ImageData.Items.Add(PropertyTagGridSize);
+            string poo =  image.PropertyItems.ToString();
+            MessageBox.Show(poo);
+            //var propertyFound = false;
+            //foreach (var prop in image.PropertyItems)
+            //{
+            //    if (prop.Id == 0x0112) propertyFound = true;
+            //}
         }
 
 
