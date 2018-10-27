@@ -27,9 +27,9 @@ namespace FileRenamer
         {
             InitializeComponent();
 
-            //populateListBoxImageData();
+            populateListBoxImageData();
 
-            retrieveEXIFDate();
+            //retrieveEXIFDate();
         }
 
         private void populateListBoxImageData()
@@ -72,10 +72,19 @@ namespace FileRenamer
             openFileDialog.Multiselect = true;
             openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
             openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
             if (openFileDialog.ShowDialog() == true)
             {
-                foreach (string filename in openFileDialog.FileNames)
-                    ListBox_Files.Items.Add(System.IO.Path.GetFileName(filename));
+
+                foreach (string fileName in openFileDialog.FileNames)
+                {
+                    // get list of file paths 
+                    MessageBox.Show(fileName);
+                    ListBox_Files.Items.Add(System.IO.Path.GetFileName(fileName));
+                }
+
+
+                   
             }
 
         }
@@ -106,17 +115,6 @@ namespace FileRenamer
             ListBox_Files.Items.Clear();
         }
 
-        private void button_Basic_Click(object sender, RoutedEventArgs e)
-        {
-            if (button_Basic.Content.ToString() == "Basic")
-            {
-
-                button_Basic.Content = "Advanced";
-            }
-            else
-            {
-                button_Basic.Content = "Basic";
-            }
-        }
+       
     }
 }
