@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileRenamer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="883.596" Width="1048.399" WindowStartupLocation="CenterScreen" Cursor="Arrow" ResizeMode="NoResize">
+        Title="MainWindow" Height="571.596" Width="1402.399" WindowStartupLocation="CenterScreen" Cursor="Arrow" ResizeMode="NoResize">
 
-    <Grid Background="{DynamicResource CheckBoxHoverBackgroundBrush}" Margin="0,0,0,-1" HorizontalAlignment="Left" Width="1046">
+    <Grid Background="{DynamicResource CheckBoxHoverBackgroundBrush}" Margin="0,0,-6,0" HorizontalAlignment="Left" Width="1402" Height="545" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="961*"/>
             <ColumnDefinition Width="48*"/>
@@ -18,21 +18,18 @@
             <RowDefinition Height="95*"/>
             <RowDefinition Height="204*"/>
         </Grid.RowDefinitions>
-        <Button Content="Browse" HorizontalAlignment="Left" Margin="425,133,0,0" VerticalAlignment="Top" Width="121" Click="Button_Click" Grid.RowSpan="2"/>
+        <Button Content="Browse" HorizontalAlignment="Left" Margin="425,133,0,0" VerticalAlignment="Top" Width="121" Click="BrowseButton_Click" Grid.RowSpan="2"/>
         <ListBox x:Name="ListBox_Files" HorizontalAlignment="Left" Height="301" Margin="66,173,0,0" VerticalAlignment="Top" Width="482" Grid.RowSpan="4" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple"/>
-        <Button Content="Rename" HorizontalAlignment="Left" Margin="607,156,0,0" VerticalAlignment="Top" Width="121" Background="{DynamicResource Brush01}" Grid.Row="3"/>
+        <Button Content="Rename" Margin="892,205,0,0" Background="{DynamicResource Brush01}" Grid.Row="3" RenderTransformOrigin="3.017,-3.15" HorizontalAlignment="Left" Width="121" Height="30" VerticalAlignment="Top" Click="Button_Click"/>
         <Label Content="Epic Image File Renamer " HorizontalAlignment="Left" Margin="66,28,0,0" VerticalAlignment="Top" Width="482" Height="60" FontSize="24" Foreground="{DynamicResource AccordionButtonExpandedBorderBrush}" Grid.RowSpan="2"/>
-        <Label Content="Image Data (EXIF) " HorizontalAlignment="Left" Margin="582,131,0,89" Width="203" FontSize="18" Foreground="{DynamicResource AccordionButtonExpandedBorderBrush}" Grid.RowSpan="2"/>
-        <ListBox HorizontalAlignment="Left" Height="219" Margin="66,156,0,0" VerticalAlignment="Top" Width="519" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="3"/>
-        <Label Content="New Image File Name" HorizontalAlignment="Left" Margin="66,111,0,0" VerticalAlignment="Top" Width="236" Height="38" FontSize="18" Foreground="{DynamicResource AccordionButtonExpandedBorderBrush}" Grid.Row="3"/>
-
-
-
-
-        <Button Content="Create Files" HorizontalAlignment="Left" Margin="590,42,0,0" VerticalAlignment="Top" Width="392" Background="{DynamicResource Brush01}" Grid.Row="3" RenderTransformOrigin="0.508,-1.233"/>
-        <Button x:Name="button_ClearFiles" Content="Remove" HorizontalAlignment="Left" Margin="427,42,0,0" VerticalAlignment="Top" Width="121" Background="{DynamicResource Brush01}" Grid.Row="3" RenderTransformOrigin="0.508,-1.233" Click="button_ClearFiles_Click"/>
-        <Label Content="Image Files" HorizontalAlignment="Left" Margin="66,131,0,0" VerticalAlignment="Top" Width="203" Height="38" FontSize="18" Foreground="{DynamicResource AccordionButtonExpandedBorderBrush}" Grid.RowSpan="2"/>
-        <ListBox x:Name="ListBox_ImageData" HorizontalAlignment="Left" Height="301" Margin="588,173,0,0" VerticalAlignment="Top" Width="397" Grid.RowSpan="4" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple"/>
+        <ListBox HorizontalAlignment="Left" Height="301" Margin="892,173,0,0" VerticalAlignment="Top" Width="444" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" Grid.RowSpan="3"/>
+        <Label Content="Preview Image File Name" HorizontalAlignment="Left" Margin="892,130,0,0" VerticalAlignment="Top" Width="236" Height="38" FontSize="18" Foreground="{DynamicResource AccordionButtonExpandedBorderBrush}" Grid.Row="1"/>
+        <Button x:Name="button_ClearFiles" Content="Remove" Margin="66,205,0,0" Background="{DynamicResource Brush01}" Grid.Row="3" RenderTransformOrigin="0.508,-1.233" Click="button_ClearFiles_Click" HorizontalAlignment="Left" Width="93" Height="30" VerticalAlignment="Top"/>
+        <Label Content="Image Files" HorizontalAlignment="Left" Margin="66,130,0,0" VerticalAlignment="Top" Width="203" Height="38" FontSize="18" Foreground="{DynamicResource AccordionButtonExpandedBorderBrush}" Grid.RowSpan="2"/>
+        <ListBox x:Name="ListBox_ImageData" HorizontalAlignment="Left" Height="301" Margin="588,173,0,0" VerticalAlignment="Top" Width="253" Grid.RowSpan="4" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple"/>
+        <Button x:Name="button_ClearFiles_Copy" Content="Remove All" Margin="175,205,0,0" Background="{DynamicResource Brush01}" Grid.Row="3" RenderTransformOrigin="0.508,-1.233" Click="button_ClearFiles_Click" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="94"/>
+        <Label HorizontalAlignment="Left" Margin="656,146,0,0" Grid.RowSpan="2" VerticalAlignment="Top"/>
+        <Label Content="Image Data (EXIF)" HorizontalAlignment="Left" Margin="588,130,0,0" VerticalAlignment="Top" Width="203" Height="38" FontSize="18" Foreground="{DynamicResource AccordionButtonExpandedBorderBrush}" Grid.RowSpan="2"/>
 
     </Grid>
 
