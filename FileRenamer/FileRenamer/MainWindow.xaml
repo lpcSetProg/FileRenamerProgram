@@ -18,18 +18,18 @@
             <RowDefinition Height="95*"/>
             <RowDefinition Height="204*"/>
         </Grid.RowDefinitions>
-        <Button Content="Browse" HorizontalAlignment="Left" Margin="425,133,0,0" VerticalAlignment="Top" Width="121" Click="BrowseButton_Click" Grid.RowSpan="2"/>
+        <Button x:Name="Button_Browse" Content="Browse" HorizontalAlignment="Left" Margin="425,133,0,0" VerticalAlignment="Top" Width="121" Click="BrowseButton_Click" Grid.RowSpan="2"/>
         <ListBox x:Name="ListBox_Files" HorizontalAlignment="Left" Height="301" Margin="66,173,0,0" VerticalAlignment="Top" Width="482" Grid.RowSpan="4" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple"/>
-        <Button Content="Rename" Margin="892,205,0,0" Background="{DynamicResource Brush01}" Grid.Row="3" RenderTransformOrigin="3.017,-3.15" HorizontalAlignment="Left" Width="121" Height="30" VerticalAlignment="Top" Click="Button_Click"/>
+        <Button x:Name="Button_Rename" Content="Rename" Margin="892,205,0,0" Background="{DynamicResource Brush01}" Grid.Row="3" RenderTransformOrigin="3.017,-3.15" HorizontalAlignment="Left" Width="121" Height="30" VerticalAlignment="Top" Click="Button_Rename_Click"/>
         <Label Content="Epic Image File Renamer " HorizontalAlignment="Left" Margin="66,28,0,0" VerticalAlignment="Top" Width="482" Height="60" FontSize="24" Foreground="{DynamicResource AccordionButtonExpandedBorderBrush}" Grid.RowSpan="2"/>
-        <ListBox HorizontalAlignment="Left" Height="301" Margin="892,173,0,0" VerticalAlignment="Top" Width="444" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" Grid.RowSpan="3"/>
+        <ListBox x:Name="ListBox_Preview" HorizontalAlignment="Left" Height="301" Margin="892,173,0,0" VerticalAlignment="Top" Width="444" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" Grid.RowSpan="3"/>
         <Label Content="Preview Image File Name" HorizontalAlignment="Left" Margin="892,130,0,0" VerticalAlignment="Top" Width="236" Height="38" FontSize="18" Foreground="{DynamicResource AccordionButtonExpandedBorderBrush}" Grid.Row="1"/>
-        <Button x:Name="button_ClearFiles" Content="Remove" Margin="66,205,0,0" Background="{DynamicResource Brush01}" Grid.Row="3" RenderTransformOrigin="0.508,-1.233" Click="button_ClearFiles_Click" HorizontalAlignment="Left" Width="93" Height="30" VerticalAlignment="Top"/>
+        <Button x:Name="Button_RemoveFile" Content="Remove Selected" Margin="66,205,0,0" Background="{DynamicResource Brush01}" Grid.Row="3" RenderTransformOrigin="0.508,-1.233" HorizontalAlignment="Left" Width="146" Height="30" VerticalAlignment="Top"/>
         <Label Content="Image Files" HorizontalAlignment="Left" Margin="66,130,0,0" VerticalAlignment="Top" Width="203" Height="38" FontSize="18" Foreground="{DynamicResource AccordionButtonExpandedBorderBrush}" Grid.RowSpan="2"/>
-        <ListBox x:Name="ListBox_ImageData" HorizontalAlignment="Left" Height="301" Margin="588,173,0,0" VerticalAlignment="Top" Width="253" Grid.RowSpan="4" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple"/>
-        <Button x:Name="button_ClearFiles_Copy" Content="Remove All" Margin="175,205,0,0" Background="{DynamicResource Brush01}" Grid.Row="3" RenderTransformOrigin="0.508,-1.233" Click="button_ClearFiles_Click" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="94"/>
+        <ListBox x:Name="ListBox_ImageData" HorizontalAlignment="Left" Height="301" Margin="588,173,0,0" VerticalAlignment="Top" Width="253" Grid.RowSpan="4" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionChanged="ListBox_ImageData_SelectionChanged"/>
+        <Button x:Name="Button_ClearAllFiles" Content="Remove All" Margin="232,205,0,0" Background="{DynamicResource Brush01}" Grid.Row="3" RenderTransformOrigin="0.508,-1.233" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="94"/>
         <Label HorizontalAlignment="Left" Margin="656,146,0,0" Grid.RowSpan="2" VerticalAlignment="Top"/>
-        <Label Content="Image Data (EXIF)" HorizontalAlignment="Left" Margin="588,130,0,0" VerticalAlignment="Top" Width="203" Height="38" FontSize="18" Foreground="{DynamicResource AccordionButtonExpandedBorderBrush}" Grid.RowSpan="2"/>
+        <Label Content="Select Image Data (EXIF)" HorizontalAlignment="Left" Margin="588,130,0,0" VerticalAlignment="Top" Width="203" Height="38" FontSize="18" Foreground="{DynamicResource AccordionButtonExpandedBorderBrush}" Grid.RowSpan="2"/>
 
     </Grid>
 
