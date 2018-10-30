@@ -2,21 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using Microsoft.Win32;
-using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace FileRenamer
 {
@@ -39,7 +30,8 @@ namespace FileRenamer
                 if (dataObject.FileList.Count > 0)
                 {
                     Button_RemoveAll.IsEnabled = true;
-                } else
+                }
+                else
                 {
                     Button_RemoveAll.IsEnabled = false;
                 }
@@ -50,7 +42,7 @@ namespace FileRenamer
         {
             Button_RemoveSelected.IsEnabled = false;
             Button_RemoveAll.IsEnabled = false;
-            //Button_Rename.IsEnabled = false;
+            Button_Rename.IsEnabled = false;
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
@@ -92,12 +84,16 @@ namespace FileRenamer
                 // Load image properties
                 firstFile = LoadImageProperties(f.FilePath, firstFile);
             }
+            ListBox_ImageData.SelectionChanged += ListBox_ImageData_SelectionChanged;
 
             if (dataObject.PropList.Count == 0)
             {
-                MessageBox.Show("The chosen files have no EXIF data in common. Please select another set of files or remove a few files from the list");
+                MessageBoxResult result = MessageBox.Show(this, "The selected files do not share enough common data.\n\nPlease select another set of files or remove a few files from the list until they share common data.","Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            ListBox_ImageData.SelectionChanged += ListBox_ImageData_SelectionChanged;
+            else if (ListBox_ImageData.SelectedIndex == -1)
+            {
+                ListBox_ImageData.SelectedIndex = 0;
+            }
         }
 
         private bool LoadImageProperties(string filePath, bool firstFile)
@@ -123,19 +119,22 @@ namespace FileRenamer
                     }
                 }
             }
-            
+
             return firstFile;
         }
 
-        
+
         private void ListBox_ImageData_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Prop prop = (Prop)ListBox_ImageData.SelectedItem;
-            if (prop == null)
+            if (ListBox_ImageData.SelectedIndex == -1)
             {
+                Button_Rename.IsEnabled = false;
                 return;
             }
+
+            Button_Rename.IsEnabled = true;
             ListBox_ImageData.SelectionChanged -= ListBox_ImageData_SelectionChanged;
+            Prop prop = (Prop)ListBox_ImageData.SelectedItem;
             // signature of a prop (id, name and type, not including value and len)
             foreach (File file in dataObject.FileList)
             {
@@ -144,7 +143,7 @@ namespace FileRenamer
                 {
                     propItem = bm.GetPropertyItem(prop.Id);
                 }
-                
+
                 // Actual prop of the current image file (id, name, type, value and len)
                 byte[] propData = propItem.Value;
                 int propDataLength = propItem.Len;
@@ -254,7 +253,13 @@ namespace FileRenamer
 
         private void Button_Rename_Click(object sender, RoutedEventArgs e)
         {
+            MessageBoxResult result = MessageBox.Show(this, "Are you sure you want to rename image file(s)?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.No)
+            {
+                return;
+            }
             List<File> tempList = CloneList(dataObject.FileList);
+            int total = tempList.Count;
             List<string> ErrorMessages = new List<string>();
             foreach (File f in tempList)
             {
@@ -265,24 +270,30 @@ namespace FileRenamer
                 }
                 catch (Exception ex)
                 {
-                    ErrorMessages.Add(ex.Message);
+                    ErrorMessages.Add(f.FileName + ": " + ex.Message);
                 }
             }
 
             if (ErrorMessages.Count == 0)
             {
-                MessageBox.Show("Files successfully renamed");
-            } else
+                MessageBox.Show("Files successfully renamed", "Result");
+            }
+            else
             {
                 string error = "";
-                foreach(string errorMessage in ErrorMessages)
+                error += total - ErrorMessages.Count + " files were renamed." + Environment.NewLine + Environment.NewLine;
+                error += ErrorMessages.Count + " files weren't renamed:" + Environment.NewLine + Environment.NewLine;
+                foreach (string errorMessage in ErrorMessages)
                 {
                     error += errorMessage + Environment.NewLine;
                 }
-                MessageBox.Show(error);
+                MessageBox.Show(error, "Result");
             }
 
-            LoadExifListBox();
+            if (total != ErrorMessages.Count)
+            {
+                LoadExifListBox();
+            }
         }
 
         private List<File> CloneList(ObservableCollection<File> input)
@@ -300,7 +311,8 @@ namespace FileRenamer
             if (ListBox_Files.SelectedItems.Count > 0)
             {
                 Button_RemoveSelected.IsEnabled = true;
-            } else
+            }
+            else
             {
                 Button_RemoveSelected.IsEnabled = false;
             }
