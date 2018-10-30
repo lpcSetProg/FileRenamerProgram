@@ -41,7 +41,7 @@ namespace FileRenamer
             FileName = Path.GetFileName(filePath);
             FileExtension = Path.GetExtension(filePath);
             FileDirectory = Path.GetDirectoryName(filePath);
-            NewFileName = FileName;
+            NewFileName = "";
         }
 
     }

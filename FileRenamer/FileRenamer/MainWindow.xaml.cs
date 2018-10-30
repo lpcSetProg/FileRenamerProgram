@@ -30,32 +30,72 @@ namespace FileRenamer
         public MainWindow()
         {
             InitializeComponent();
+            UISetup();
             DataContext = new DataObject();
             dataObject = DataContext as DataObject;
+
+            dataObject.FileList.CollectionChanged += (sender, e) =>
+            {
+                if (dataObject.FileList.Count > 0)
+                {
+                    Button_RemoveAll.IsEnabled = true;
+                } else
+                {
+                    Button_RemoveAll.IsEnabled = false;
+                }
+            };
+        }
+
+        private void UISetup()
+        {
+            Button_RemoveSelected.IsEnabled = false;
+            Button_RemoveAll.IsEnabled = false;
+            //Button_Rename.IsEnabled = false;
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
-            ListBox_ImageData.SelectionChanged -= ListBox_ImageData_SelectionChanged;
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Multiselect = true;
-            openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
-            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Multiselect = true,
+                Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
 
             if (openFileDialog.ShowDialog() == true)
             {
                 dataObject.FileList.Clear();
-                dataObject.PropList.Clear();
 
-                bool firstFile = true;
                 foreach (string filePath in openFileDialog.FileNames)
                 {
                     File newFile = new File(filePath);
                     dataObject.FileList.Add(newFile);
-
-                    // Load image properties
-                    firstFile = LoadImageProperties(filePath, firstFile);
                 }
+
+                LoadExifListBox();
+            }
+
+        }
+
+        public void LoadExifListBox()
+        {
+            if (dataObject.FileList.Count == 0)
+            {
+                dataObject.PropList.Clear();
+                return;
+            }
+            ListBox_ImageData.SelectionChanged -= ListBox_ImageData_SelectionChanged;
+            dataObject.PropList.Clear();
+            bool firstFile = true;
+            foreach (File f in dataObject.FileList)
+            {
+                // Load image properties
+                firstFile = LoadImageProperties(f.FilePath, firstFile);
+            }
+
+            if (dataObject.PropList.Count == 0)
+            {
+                MessageBox.Show("The chosen files have no EXIF data in common. Please select another set of files or remove a few files from the list");
             }
             ListBox_ImageData.SelectionChanged += ListBox_ImageData_SelectionChanged;
         }
@@ -87,21 +127,16 @@ namespace FileRenamer
             return firstFile;
         }
 
-        private System.Drawing.Image LoadImage(string filePath)
-        {
-            System.Drawing.Image image;
-            using (Bitmap bm = new Bitmap(filePath))
-            {
-                image = bm;
-            }
-            return image;
-        }
-
+        
         private void ListBox_ImageData_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            Prop prop = (Prop)ListBox_ImageData.SelectedItem;
+            if (prop == null)
+            {
+                return;
+            }
             ListBox_ImageData.SelectionChanged -= ListBox_ImageData_SelectionChanged;
             // signature of a prop (id, name and type, not including value and len)
-            Prop prop = dataObject.PropList.Single(x => x.Name == ((Prop)ListBox_ImageData.SelectedValue).Name);
             foreach (File file in dataObject.FileList)
             {
                 PropertyItem propItem;
@@ -219,27 +254,24 @@ namespace FileRenamer
 
         private void Button_Rename_Click(object sender, RoutedEventArgs e)
         {
+            List<File> tempList = CloneList(dataObject.FileList);
             List<string> ErrorMessages = new List<string>();
-            foreach (File f in dataObject.FileList)
+            foreach (File f in tempList)
             {
                 try
                 {
                     System.IO.File.Move(f.FilePath, f.FileDirectory + @"\" + f.NewFileName);
+                    dataObject.FileList.Remove(f);
                 }
                 catch (Exception ex)
                 {
                     ErrorMessages.Add(ex.Message);
                 }
-                
             }
 
             if (ErrorMessages.Count == 0)
             {
                 MessageBox.Show("Files successfully renamed");
-                dataObject.FileList.Clear();
-                ListBox_ImageData.SelectionChanged -= ListBox_ImageData_SelectionChanged;
-                dataObject.PropList.Clear();
-                ListBox_ImageData.SelectionChanged += ListBox_ImageData_SelectionChanged;
             } else
             {
                 string error = "";
@@ -249,9 +281,32 @@ namespace FileRenamer
                 }
                 MessageBox.Show(error);
             }
+
+            LoadExifListBox();
         }
 
-        private void Button_RemoveFile_Click(object sender, RoutedEventArgs e)
+        private List<File> CloneList(ObservableCollection<File> input)
+        {
+            List<File> newList = new List<File>();
+            foreach (File f in input)
+            {
+                newList.Add(f);
+            }
+            return newList;
+        }
+
+        private void ListBox_Files_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ListBox_Files.SelectedItems.Count > 0)
+            {
+                Button_RemoveSelected.IsEnabled = true;
+            } else
+            {
+                Button_RemoveSelected.IsEnabled = false;
+            }
+        }
+
+        private void Button_RemoveSelected_Click(object sender, RoutedEventArgs e)
         {
             List<File> selectedFiles = new List<File>();
             foreach (File f in ListBox_Files.SelectedItems)
@@ -264,14 +319,15 @@ namespace FileRenamer
                 dataObject.FileList.Remove(f);
             }
 
+            LoadExifListBox();
+        }
+
+        private void Button_RemoveAll_Click(object sender, RoutedEventArgs e)
+        {
+            dataObject.FileList.Clear();
+
             ListBox_ImageData.SelectionChanged -= ListBox_ImageData_SelectionChanged;
             dataObject.PropList.Clear();
-            bool firstFile = true;
-            foreach (File f in dataObject.FileList)
-            {
-                // Load image properties
-                firstFile = LoadImageProperties(f.FilePath, firstFile);
-            }
             ListBox_ImageData.SelectionChanged += ListBox_ImageData_SelectionChanged;
         }
     }

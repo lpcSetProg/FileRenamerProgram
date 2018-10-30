@@ -16,7 +16,8 @@ namespace FileRenamer
         public Prop(PropertyItem pi)
         {
             Id = pi.Id;
-            Name = Enum.GetName(typeof(Utilities.ExifPropertyTypes), pi.Id);
+            string tempName = Enum.GetName(typeof(Utilities.ExifPropertyTypes), pi.Id);
+            Name = tempName != null ? tempName : "Unknown Property";
             Type = (Utilities.ExifPropertyDataTypes)pi.Type;
         }
     }
