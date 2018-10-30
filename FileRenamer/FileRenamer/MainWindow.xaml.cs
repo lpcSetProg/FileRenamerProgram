@@ -8,14 +8,15 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Win32;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace FileRenamer
 {
@@ -24,66 +25,18 @@ namespace FileRenamer
     /// </summary>
     public partial class MainWindow : Window
     {
-        public Dictionary<string, string> fileName_filePath;
-        public List<Prop> currentPropList;
-        public struct Prop
-        {
-            public int Id;
-            public string Name;
-            public Utilities.ExifPropertyDataTypes Type;
-
-            public Prop(int id, string name, Utilities.ExifPropertyDataTypes type)
-            {
-                Id = id;
-                Name = name;
-                Type = type;
-            }
-        }
-
+        DataObject dataObject;
 
         public MainWindow()
         {
             InitializeComponent();
-            fileName_filePath = new Dictionary<string, string>();
-            //populateListBoxImageData();
-
-            //retrieveEXIFDate();
-        }
-
-        private void populateListBoxImageData()
-        {
-            ListBox_ImageData.Items.Add("File Size");
-            ListBox_ImageData.Items.Add("File Type");
-            ListBox_ImageData.Items.Add("MIME Type");
-            ListBox_ImageData.Items.Add("Image Width");
-            ListBox_ImageData.Items.Add("Image Height");
-            ListBox_ImageData.Items.Add("Encoding Process");
-            ListBox_ImageData.Items.Add("Bits Per Sample");
-            ListBox_ImageData.Items.Add("Color Components");
-            ListBox_ImageData.Items.Add("X Resolution");
-            ListBox_ImageData.Items.Add("Y Resolution");
-            ListBox_ImageData.Items.Add("YCbCr Sub Sampling");
-
-        }
-
-
-        private void retrieveEXIFDate()
-        {
-            System.Drawing.Image image = System.Drawing.Image.FromFile(@"C:\Users\Lcocarell2816\Desktop\Photos\120px-10_Brown_Titlark.jpg");
-            var PropertyTagGridSize = Encoding.UTF8.GetString(image.GetPropertyItem(0x5091).Value);
-            ListBox_ImageData.Items.Add(PropertyTagGridSize);
-            string poo = image.PropertyItems.ToString();
-            MessageBox.Show(poo);
-
-            //var propertyFound = false;
-            //foreach (var prop in image.PropertyItems)
-            //{
-            //    if (prop.Id == 0x0112) propertyFound = true;
-            //}
+            DataContext = new DataObject();
+            dataObject = DataContext as DataObject;
         }
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
+            ListBox_ImageData.SelectionChanged -= ListBox_ImageData_SelectionChanged;
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Multiselect = true;
             openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
@@ -91,67 +44,81 @@ namespace FileRenamer
 
             if (openFileDialog.ShowDialog() == true)
             {
-                bool firstFile = true;
-                currentPropList = new List<Prop>();
+                dataObject.FileList.Clear();
+                dataObject.PropList.Clear();
 
+                bool firstFile = true;
                 foreach (string filePath in openFileDialog.FileNames)
                 {
-                    // get list of file names 
-                    string fileName = System.IO.Path.GetFileName(filePath);
-                    ListBox_Files.Items.Add(fileName);
-                    fileName_filePath.Add(fileName,filePath);
+                    File newFile = new File(filePath);
+                    dataObject.FileList.Add(newFile);
 
-                    // 
-                    System.Drawing.Image image = System.Drawing.Image.FromFile(filePath);
-                    if (firstFile)
-                    {
-                        foreach (PropertyItem pi in image.PropertyItems)
-                        {
-                            string propName = Enum.GetName(typeof(Utilities.ExifPropertyTypes), pi.Id);
-                            Utilities.ExifPropertyDataTypes propType = (Utilities.ExifPropertyDataTypes)pi.Type;
-                            Prop p = new Prop(pi.Id, propName, propType);
-                            currentPropList.Add(p);
-                        }
-                        firstFile = false;
-                    }
-                    else
-                    {
-                        List<Prop> tempPropList = new List<Prop>();
-                        currentPropList.All(x =>
-                        {
-                            if (tempPropList.Count == image.PropertyIdList.Length) return false;
-                            if (image.PropertyIdList.Contains(x.Id)) tempPropList.Add(x);
-                            return true;
-                        });
-                        currentPropList = new List<Prop>(tempPropList);
-                    }
-
-                    ListBox_Preview.Items.Add(fileName);
+                    // Load image properties
+                    firstFile = LoadImageProperties(filePath, firstFile);
                 }
-
-                ListBox_ImageData.ItemsSource = currentPropList.Select(x => x.Name);
-
             }
+            ListBox_ImageData.SelectionChanged += ListBox_ImageData_SelectionChanged;
+        }
 
+        private bool LoadImageProperties(string filePath, bool firstFile)
+        {
+            using (Bitmap image = new Bitmap(filePath))
+            {
+                if (firstFile)
+                {
+                    foreach (PropertyItem pi in image.PropertyItems)
+                    {
+                        Prop p = new Prop(pi);
+                        dataObject.PropList.Add(p);
+                    }
+                    firstFile = false;
+                }
+                else
+                {
+                    List<Prop> tempPropList = new List<Prop>(dataObject.PropList);
+                    foreach (Prop p in tempPropList)
+                    {
+                        if (dataObject.PropList.Count == 0) break;
+                        if (!image.PropertyIdList.Contains(p.Id)) dataObject.PropList.Remove(p);
+                    }
+                }
+            }
+            
+            return firstFile;
+        }
+
+        private System.Drawing.Image LoadImage(string filePath)
+        {
+            System.Drawing.Image image;
+            using (Bitmap bm = new Bitmap(filePath))
+            {
+                image = bm;
+            }
+            return image;
         }
 
         private void ListBox_ImageData_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Prop p = currentPropList.Find(x => x.Name == ListBox_ImageData.SelectedValue.ToString());
-            ListBox_Preview.Items.Clear();
-            foreach (string fileName in ListBox_Files.Items)
+            ListBox_ImageData.SelectionChanged -= ListBox_ImageData_SelectionChanged;
+            // signature of a prop (id, name and type, not including value and len)
+            Prop prop = dataObject.PropList.Single(x => x.Name == ((Prop)ListBox_ImageData.SelectedValue).Name);
+            foreach (File file in dataObject.FileList)
             {
-                System.Drawing.Image image = System.Drawing.Image.FromFile(fileName_filePath[fileName]);
-                PropertyItem propItem = image.GetPropertyItem(p.Id);
-
+                PropertyItem propItem;
+                using (Bitmap bm = new Bitmap(file.FilePath))
+                {
+                    propItem = bm.GetPropertyItem(prop.Id);
+                }
+                
+                // Actual prop of the current image file (id, name, type, value and len)
                 byte[] propData = propItem.Value;
                 int propDataLength = propItem.Len;
 
                 string result = "";
                 int num_items, item_size;
                 string newFileName = "";
-                // rename fileName
-                switch (p.Type)
+
+                switch (prop.Type)
                 {
                     case Utilities.ExifPropertyDataTypes.ByteArray:
                     case Utilities.ExifPropertyDataTypes.UByteArray:
@@ -243,13 +210,69 @@ namespace FileRenamer
                         break;
                 }
 
-                ListBox_Preview.Items.Add(newFileName);
+                file.NewFileName = newFileName + file.FileExtension;
             }
+
+            ListBox_ImageData.SelectionChanged += ListBox_ImageData_SelectionChanged;
+
         }
 
         private void Button_Rename_Click(object sender, RoutedEventArgs e)
         {
+            List<string> ErrorMessages = new List<string>();
+            foreach (File f in dataObject.FileList)
+            {
+                try
+                {
+                    System.IO.File.Move(f.FilePath, f.FileDirectory + @"\" + f.NewFileName);
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessages.Add(ex.Message);
+                }
+                
+            }
 
+            if (ErrorMessages.Count == 0)
+            {
+                MessageBox.Show("Files successfully renamed");
+                dataObject.FileList.Clear();
+                ListBox_ImageData.SelectionChanged -= ListBox_ImageData_SelectionChanged;
+                dataObject.PropList.Clear();
+                ListBox_ImageData.SelectionChanged += ListBox_ImageData_SelectionChanged;
+            } else
+            {
+                string error = "";
+                foreach(string errorMessage in ErrorMessages)
+                {
+                    error += errorMessage + Environment.NewLine;
+                }
+                MessageBox.Show(error);
+            }
+        }
+
+        private void Button_RemoveFile_Click(object sender, RoutedEventArgs e)
+        {
+            List<File> selectedFiles = new List<File>();
+            foreach (File f in ListBox_Files.SelectedItems)
+            {
+                selectedFiles.Add(f);
+            }
+
+            foreach (File f in selectedFiles)
+            {
+                dataObject.FileList.Remove(f);
+            }
+
+            ListBox_ImageData.SelectionChanged -= ListBox_ImageData_SelectionChanged;
+            dataObject.PropList.Clear();
+            bool firstFile = true;
+            foreach (File f in dataObject.FileList)
+            {
+                // Load image properties
+                firstFile = LoadImageProperties(f.FilePath, firstFile);
+            }
+            ListBox_ImageData.SelectionChanged += ListBox_ImageData_SelectionChanged;
         }
     }
 }
